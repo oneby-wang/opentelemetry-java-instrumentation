@@ -47,7 +47,8 @@ final class CouchbaseAttributesGetter
   public String getDbOperationName(CouchbaseRequestInfo couchbaseRequest) {
     SqlStatementInfo sqlStatementInfo = couchbaseRequest.getSqlStatementInfo();
     if (sqlStatementInfo == null) {
-      return null;
+      // For method calls (not queries), get operation from the operation field
+      return couchbaseRequest.operation();
     }
     // In stable semconv mode, when query summary is available, operation name is not needed
     // since the query summary already provides this information in a more detailed form.

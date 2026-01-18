@@ -40,15 +40,13 @@ public abstract class CouchbaseRequestInfo {
         methodOperationNames
             .get(declaringClass)
             .computeIfAbsent(methodName, m -> computeOperation(declaringClass, m));
-    // For method calls (not queries), create SqlStatementInfo with only operation name
-    SqlStatementInfo sqlStatementInfo = SqlStatementInfo.create(null, operation, null, null);
-    return new AutoValue_CouchbaseRequestInfo(bucket, sqlStatementInfo, true);
+    return new AutoValue_CouchbaseRequestInfo(bucket, null, operation, true);
   }
 
   public static CouchbaseRequestInfo create(@Nullable String bucket, Object query) {
     SqlStatementInfo sqlStatementInfo = CouchbaseQuerySanitizer.sanitize(query);
 
-    return new AutoValue_CouchbaseRequestInfo(bucket, sqlStatementInfo, false);
+    return new AutoValue_CouchbaseRequestInfo(bucket, sqlStatementInfo, null, false);
   }
 
   private static String computeOperation(Class<?> declaringClass, String methodName) {
@@ -72,19 +70,10 @@ public abstract class CouchbaseRequestInfo {
   @Nullable
   public abstract SqlStatementInfo getSqlStatementInfo();
 
+  @Nullable
+  public abstract String operation();
+
   public abstract boolean isMethodCall();
-
-  @Nullable
-  public String statement() {
-    SqlStatementInfo sqlStatementInfo = getSqlStatementInfo();
-    return sqlStatementInfo != null ? sqlStatementInfo.getQueryText() : null;
-  }
-
-  @Nullable
-  public String operation() {
-    SqlStatementInfo sqlStatementInfo = getSqlStatementInfo();
-    return sqlStatementInfo != null ? sqlStatementInfo.getOperationName() : null;
-  }
 
   @Nullable
   public String getLocalAddress() {
