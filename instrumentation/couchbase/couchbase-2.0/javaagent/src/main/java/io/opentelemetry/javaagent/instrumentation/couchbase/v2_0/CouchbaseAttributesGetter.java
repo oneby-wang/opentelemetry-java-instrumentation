@@ -49,8 +49,9 @@ final class CouchbaseAttributesGetter
     if (sqlStatementInfo == null) {
       return null;
     }
-    // In stable semconv mode, when query summary is available, don't set operation name
-    // since the query summary already provides this information
+    // In stable semconv mode, when query summary is available, operation name is not needed
+    // since the query summary already provides this information in a more detailed form.
+    // This avoids redundancy and follows the semantic conventions guidance.
     if (SemconvStability.emitStableDatabaseSemconv()
         && sqlStatementInfo.getQuerySummary() != null) {
       return null;

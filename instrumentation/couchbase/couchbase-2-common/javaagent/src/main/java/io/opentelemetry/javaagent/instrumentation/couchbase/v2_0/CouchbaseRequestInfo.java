@@ -40,6 +40,7 @@ public abstract class CouchbaseRequestInfo {
         methodOperationNames
             .get(declaringClass)
             .computeIfAbsent(methodName, m -> computeOperation(declaringClass, m));
+    // For method calls (not queries), create SqlStatementInfo with only operation name
     SqlStatementInfo sqlStatementInfo = SqlStatementInfo.create(null, operation, null, null);
     return new AutoValue_CouchbaseRequestInfo(bucket, sqlStatementInfo, true);
   }
