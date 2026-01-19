@@ -188,7 +188,9 @@ public abstract class AbstractR2dbcStatementTest {
                                 equalTo(maybeStable(DB_STATEMENT), parameter.expectedStatement),
                                 equalTo(
                                     DB_QUERY_SUMMARY,
-                                    emitStableDatabaseSemconv() ? parameter.getQuerySummary() : null),
+                                    emitStableDatabaseSemconv()
+                                        ? parameter.getQuerySummary()
+                                        : null),
                                 equalTo(
                                     maybeStable(DB_OPERATION),
                                     emitStableDatabaseSemconv() ? null : parameter.operation),
@@ -216,7 +218,7 @@ public abstract class AbstractR2dbcStatementTest {
                                 system.system,
                                 "SELECT 3",
                                 "SELECT ?",
-                                "SELECT " + DB,
+                                emitStableDatabaseSemconv() ? "SELECT" : "SELECT " + DB,
                                 null,
                                 "SELECT"))),
                     Arguments.of(
@@ -287,7 +289,7 @@ public abstract class AbstractR2dbcStatementTest {
         "io.opentelemetry.r2dbc-1.0",
         DB_SYSTEM_NAME,
         DB_NAMESPACE,
-        DB_OPERATION_NAME,
+        emitStableDatabaseSemconv() ? DB_QUERY_SUMMARY : DB_OPERATION_NAME,
         SERVER_ADDRESS,
         SERVER_PORT);
   }

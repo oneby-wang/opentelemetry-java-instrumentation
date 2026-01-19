@@ -18,7 +18,8 @@ import javax.annotation.Nullable;
  * any time.
  */
 public enum R2dbcSqlAttributesGetter
-    implements SqlClientAttributesGetter<DbExecution, Void>, ExtractQuerySummaryMarker<DbExecution, Void> {
+    implements
+        SqlClientAttributesGetter<DbExecution, Void>, ExtractQuerySummaryMarker<DbExecution, Void> {
   INSTANCE;
 
   @Override
