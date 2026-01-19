@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Named.named;
 
 import io.opentelemetry.api.common.AttributeKey;
 import io.opentelemetry.api.trace.SpanKind;
+import io.opentelemetry.javaagent.instrumentation.hibernate.ExperimentalTestHelper;
 import io.opentelemetry.sdk.testing.assertj.SpanDataAssert;
 import io.opentelemetry.sdk.trace.data.SpanData;
 import io.opentelemetry.sdk.trace.data.StatusData;
@@ -179,9 +180,9 @@ class SessionTest extends AbstractHibernateTest {
                             new UnknownEntityTypeException(
                                 "Unable to locate persister: java.lang.Long"))
                         .hasAttributesSatisfyingExactly(
-                            satisfies(
-                                AttributeKey.stringKey("hibernate.session_id"),
-                                val -> val.isInstanceOf(String.class))),
+                            experimentalSatisfies(
+                                HIBERNATE_SESSION_ID,
+                                val -> assertThat(val).isInstanceOf(String.class))),
                 span ->
                     assertSpanWithSessionId(
                         span,
@@ -352,9 +353,11 @@ class SessionTest extends AbstractHibernateTest {
                 span -> assertClientSpan(span, trace.getSpan(6), "INSERT"),
                 span -> assertClientSpan(span, trace.getSpan(6), "DELETE")));
 
-    assertNotEquals(sessionId1.get(), sessionId2.get());
-    assertNotEquals(sessionId2.get(), sessionId3.get());
-    assertNotEquals(sessionId1.get(), sessionId3.get());
+    if (ExperimentalTestHelper.isEnabled) {
+      assertNotEquals(sessionId1.get(), sessionId2.get());
+      assertNotEquals(sessionId2.get(), sessionId3.get());
+      assertNotEquals(sessionId1.get(), sessionId3.get());
+    }
   }
 
   private static Stream<Arguments> provideHibernateActionParameters() {
@@ -833,7 +836,8 @@ class SessionTest extends AbstractHibernateTest {
   @SuppressWarnings("deprecation") // TODO DB_CONNECTION_STRING deprecation
   private static SpanDataAssert assertClientSpan(
       SpanDataAssert span, SpanData parent, String verb) {
-    return span.hasName(verb.concat(" db1.Value"))
+    return span.hasName(
+            emitStableDatabaseSemconv() ? verb.concat(" Value") : verb.concat(" db1.Value"))
         .hasKind(SpanKind.CLIENT)
         .hasParent(parent)
         .hasAttributesSatisfyingExactly(
