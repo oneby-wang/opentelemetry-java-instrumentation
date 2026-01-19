@@ -145,6 +145,6 @@ tasks {
   }
 
   check {
-    dependsOn(testing.suites, testStableSemconv, testExperimental, testing.suites.named("version5TestStableSemconv"))
+    dependsOn(testing.suites, testStableSemconv, testExperimental)
   }
 }

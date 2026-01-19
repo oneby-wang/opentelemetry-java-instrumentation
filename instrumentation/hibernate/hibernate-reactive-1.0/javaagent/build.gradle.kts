@@ -27,50 +27,62 @@ dependencies {
 
 val latestDepTest = findProperty("testLatestDeps") as Boolean
 
+fun JvmTestSuite.configureReactive1Dependencies() {
+  dependencies {
+    implementation("org.testcontainers:testcontainers")
+    if (latestDepTest) {
+      implementation("org.hibernate.reactive:hibernate-reactive-core:1.+")
+      implementation("io.vertx:vertx-pg-client:4.+")
+    } else {
+      implementation("org.hibernate.reactive:hibernate-reactive-core:1.0.0.Final")
+      implementation("io.vertx:vertx-pg-client:4.1.5")
+    }
+    compileOnly("io.vertx:vertx-codegen:4.1.5")
+  }
+}
+
+fun JvmTestSuite.configureReactive2Dependencies() {
+  dependencies {
+    implementation("org.testcontainers:testcontainers")
+    implementation(project(":instrumentation:hibernate:hibernate-reactive-1.0:hibernate-reactive-2.0-testing"))
+    if (latestDepTest) {
+      implementation("org.hibernate.reactive:hibernate-reactive-core:3.+")
+      implementation("io.vertx:vertx-pg-client:4.+")
+    } else {
+      implementation("org.hibernate.reactive:hibernate-reactive-core:2.0.0.Final")
+      implementation("io.vertx:vertx-pg-client:4.4.2")
+    }
+    compileOnly("io.vertx:vertx-codegen:4.4.2")
+  }
+}
+
+fun JvmTestSuite.configureReactive4Dependencies() {
+  dependencies {
+    implementation("org.testcontainers:testcontainers")
+    implementation(project(":instrumentation:hibernate:hibernate-reactive-1.0:hibernate-reactive-2.0-testing"))
+    if (latestDepTest) {
+      implementation("org.hibernate.reactive:hibernate-reactive-core:latest.release")
+      implementation("io.vertx:vertx-pg-client:latest.release")
+    } else {
+      implementation("org.hibernate.reactive:hibernate-reactive-core:4.0.0.Final")
+      implementation("io.vertx:vertx-pg-client:5.0.0")
+    }
+    compileOnly("io.vertx:vertx-codegen:4.4.2")
+  }
+}
+
 testing {
   suites {
     val hibernateReactive1Test by registering(JvmTestSuite::class) {
-      dependencies {
-        implementation("org.testcontainers:testcontainers")
-        if (latestDepTest) {
-          implementation("org.hibernate.reactive:hibernate-reactive-core:1.+")
-          implementation("io.vertx:vertx-pg-client:4.+")
-        } else {
-          implementation("org.hibernate.reactive:hibernate-reactive-core:1.0.0.Final")
-          implementation("io.vertx:vertx-pg-client:4.1.5")
-        }
-        compileOnly("io.vertx:vertx-codegen:4.1.5")
-      }
+      configureReactive1Dependencies()
     }
 
     val hibernateReactive2Test by registering(JvmTestSuite::class) {
-      dependencies {
-        implementation("org.testcontainers:testcontainers")
-        implementation(project(":instrumentation:hibernate:hibernate-reactive-1.0:hibernate-reactive-2.0-testing"))
-        if (latestDepTest) {
-          implementation("org.hibernate.reactive:hibernate-reactive-core:3.+")
-          implementation("io.vertx:vertx-pg-client:4.+")
-        } else {
-          implementation("org.hibernate.reactive:hibernate-reactive-core:2.0.0.Final")
-          implementation("io.vertx:vertx-pg-client:4.4.2")
-        }
-        compileOnly("io.vertx:vertx-codegen:4.4.2")
-      }
+      configureReactive2Dependencies()
     }
 
     val hibernateReactive4Test by registering(JvmTestSuite::class) {
-      dependencies {
-        implementation("org.testcontainers:testcontainers")
-        implementation(project(":instrumentation:hibernate:hibernate-reactive-1.0:hibernate-reactive-2.0-testing"))
-        if (latestDepTest) {
-          implementation("org.hibernate.reactive:hibernate-reactive-core:latest.release")
-          implementation("io.vertx:vertx-pg-client:latest.release")
-        } else {
-          implementation("org.hibernate.reactive:hibernate-reactive-core:4.0.0.Final")
-          implementation("io.vertx:vertx-pg-client:5.0.0")
-        }
-        compileOnly("io.vertx:vertx-codegen:4.4.2")
-      }
+      configureReactive4Dependencies()
     }
 
     val hibernateReactive1TestStableSemconv by registering(JvmTestSuite::class) {
@@ -83,17 +95,7 @@ testing {
         }
       }
 
-      dependencies {
-        implementation("org.testcontainers:testcontainers")
-        if (latestDepTest) {
-          implementation("org.hibernate.reactive:hibernate-reactive-core:1.+")
-          implementation("io.vertx:vertx-pg-client:4.+")
-        } else {
-          implementation("org.hibernate.reactive:hibernate-reactive-core:1.0.0.Final")
-          implementation("io.vertx:vertx-pg-client:4.1.5")
-        }
-        compileOnly("io.vertx:vertx-codegen:4.1.5")
-      }
+      configureReactive1Dependencies()
 
       targets {
         all {
@@ -114,18 +116,7 @@ testing {
         }
       }
 
-      dependencies {
-        implementation("org.testcontainers:testcontainers")
-        implementation(project(":instrumentation:hibernate:hibernate-reactive-1.0:hibernate-reactive-2.0-testing"))
-        if (latestDepTest) {
-          implementation("org.hibernate.reactive:hibernate-reactive-core:3.+")
-          implementation("io.vertx:vertx-pg-client:4.+")
-        } else {
-          implementation("org.hibernate.reactive:hibernate-reactive-core:2.0.0.Final")
-          implementation("io.vertx:vertx-pg-client:4.4.2")
-        }
-        compileOnly("io.vertx:vertx-codegen:4.4.2")
-      }
+      configureReactive2Dependencies()
 
       targets {
         all {
@@ -146,18 +137,7 @@ testing {
         }
       }
 
-      dependencies {
-        implementation("org.testcontainers:testcontainers")
-        implementation(project(":instrumentation:hibernate:hibernate-reactive-1.0:hibernate-reactive-2.0-testing"))
-        if (latestDepTest) {
-          implementation("org.hibernate.reactive:hibernate-reactive-core:latest.release")
-          implementation("io.vertx:vertx-pg-client:latest.release")
-        } else {
-          implementation("org.hibernate.reactive:hibernate-reactive-core:4.0.0.Final")
-          implementation("io.vertx:vertx-pg-client:5.0.0")
-        }
-        compileOnly("io.vertx:vertx-codegen:4.4.2")
-      }
+      configureReactive4Dependencies()
 
       targets {
         all {
@@ -222,13 +202,7 @@ tasks {
   }
 
   check {
-    dependsOn(
-      testing.suites,
-      testStableSemconv,
-      testing.suites.named("hibernateReactive1TestStableSemconv"),
-      testing.suites.named("hibernateReactive2TestStableSemconv"),
-      testing.suites.named("hibernateReactive4TestStableSemconv")
-    )
+    dependsOn(testing.suites, testStableSemconv)
   }
 }
 

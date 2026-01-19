@@ -173,12 +173,6 @@ tasks {
   }
 
   check {
-    dependsOn(
-      testing.suites,
-      testStableSemconv,
-      testExperimental,
-      testing.suites.named("hibernate6TestStableSemconv"),
-      testing.suites.named("hibernate7TestStableSemconv")
-    )
+    dependsOn(testing.suites, testStableSemconv, testExperimental)
   }
 }
