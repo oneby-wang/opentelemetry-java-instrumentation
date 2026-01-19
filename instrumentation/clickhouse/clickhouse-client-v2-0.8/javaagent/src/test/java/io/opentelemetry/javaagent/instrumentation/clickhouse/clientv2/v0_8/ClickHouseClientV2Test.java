@@ -10,7 +10,6 @@ import static io.opentelemetry.instrumentation.testing.junit.db.DbClientMetricsT
 import static io.opentelemetry.instrumentation.testing.junit.db.SemconvStabilityUtil.maybeStable;
 import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.equalTo;
 import static io.opentelemetry.semconv.DbAttributes.DB_NAMESPACE;
-import static io.opentelemetry.semconv.DbAttributes.DB_OPERATION_NAME;
 import static io.opentelemetry.semconv.DbAttributes.DB_QUERY_SUMMARY;
 import static io.opentelemetry.semconv.DbAttributes.DB_RESPONSE_STATUS_CODE;
 import static io.opentelemetry.semconv.DbAttributes.DB_SYSTEM_NAME;
@@ -128,13 +127,12 @@ class ClickHouseClientV2Test {
                             equalTo(SERVER_PORT, port),
                             equalTo(maybeStable(DB_STATEMENT), "select * from " + tableName),
                             equalTo(DB_QUERY_SUMMARY, emitStableDatabaseSemconv() ? "SELECT test_table" : null),
-                            equalTo(maybeStable(DB_OPERATION), "SELECT"))));
+                            equalTo(maybeStable(DB_OPERATION), emitStableDatabaseSemconv() ? null : "SELECT"))));
 
     assertDurationMetric(
         testing,
         "io.opentelemetry.clickhouse-client-v2-0.8",
         DB_SYSTEM_NAME,
-        DB_OPERATION_NAME,
         DB_QUERY_SUMMARY,
         DB_NAMESPACE,
         SERVER_ADDRESS,
@@ -171,7 +169,7 @@ class ClickHouseClientV2Test {
                                 maybeStable(DB_STATEMENT),
                                 "insert into " + tableName + " values(?)(?)(?)"),
                             equalTo(DB_QUERY_SUMMARY, emitStableDatabaseSemconv() ? "INSERT test_table" : null),
-                            equalTo(maybeStable(DB_OPERATION), "INSERT")),
+                            equalTo(maybeStable(DB_OPERATION), emitStableDatabaseSemconv() ? null : "INSERT")),
                 span ->
                     span.hasName(emitStableDatabaseSemconv() ? "SELECT test_table" : "SELECT " + dbName)
                         .hasKind(SpanKind.CLIENT)
@@ -183,7 +181,7 @@ class ClickHouseClientV2Test {
                             equalTo(SERVER_PORT, port),
                             equalTo(maybeStable(DB_STATEMENT), "select * from " + tableName),
                             equalTo(DB_QUERY_SUMMARY, emitStableDatabaseSemconv() ? "SELECT test_table" : null),
-                            equalTo(maybeStable(DB_OPERATION), "SELECT"))));
+                            equalTo(maybeStable(DB_OPERATION), emitStableDatabaseSemconv() ? null : "SELECT"))));
   }
 
   @Test
@@ -213,7 +211,7 @@ class ClickHouseClientV2Test {
                             equalTo(SERVER_PORT, port),
                             equalTo(maybeStable(DB_STATEMENT), "select * from " + tableName),
                             equalTo(DB_QUERY_SUMMARY, emitStableDatabaseSemconv() ? "SELECT test_table" : null),
-                            equalTo(maybeStable(DB_OPERATION), "SELECT"))));
+                            equalTo(maybeStable(DB_OPERATION), emitStableDatabaseSemconv() ? null : "SELECT"))));
   }
 
   @Test
@@ -242,7 +240,7 @@ class ClickHouseClientV2Test {
                             equalTo(SERVER_PORT, port),
                             equalTo(maybeStable(DB_STATEMENT), "select * from non_existent_table"),
                             equalTo(DB_QUERY_SUMMARY, emitStableDatabaseSemconv() ? "SELECT non_existent_table" : null),
-                            equalTo(maybeStable(DB_OPERATION), "SELECT"),
+                            equalTo(maybeStable(DB_OPERATION), emitStableDatabaseSemconv() ? null : "SELECT"),
                             equalTo(
                                 DB_RESPONSE_STATUS_CODE,
                                 SemconvStability.emitStableDatabaseSemconv() ? "60" : null),
@@ -281,7 +279,7 @@ class ClickHouseClientV2Test {
                                 maybeStable(DB_STATEMENT),
                                 "select * from " + tableName + " limit ?"),
                             equalTo(DB_QUERY_SUMMARY, emitStableDatabaseSemconv() ? "SELECT test_table" : null),
-                            equalTo(maybeStable(DB_OPERATION), "SELECT"))));
+                            equalTo(maybeStable(DB_OPERATION), emitStableDatabaseSemconv() ? null : "SELECT"))));
   }
 
   @Test
@@ -310,7 +308,7 @@ class ClickHouseClientV2Test {
                                 maybeStable(DB_STATEMENT),
                                 "select * from " + tableName + " limit ?"),
                             equalTo(DB_QUERY_SUMMARY, emitStableDatabaseSemconv() ? "SELECT test_table" : null),
-                            equalTo(maybeStable(DB_OPERATION), "SELECT"))));
+                            equalTo(maybeStable(DB_OPERATION), emitStableDatabaseSemconv() ? null : "SELECT"))));
   }
 
   @Test
@@ -344,7 +342,7 @@ class ClickHouseClientV2Test {
                                 maybeStable(DB_STATEMENT),
                                 "insert into " + tableName + " values(?)"),
                             equalTo(DB_QUERY_SUMMARY, emitStableDatabaseSemconv() ? "INSERT test_table" : null),
-                            equalTo(maybeStable(DB_OPERATION), "INSERT")),
+                            equalTo(maybeStable(DB_OPERATION), emitStableDatabaseSemconv() ? null : "INSERT")),
                 span ->
                     span.hasName(emitStableDatabaseSemconv() ? "SELECT test_table" : "SELECT " + dbName)
                         .hasKind(SpanKind.CLIENT)
@@ -358,7 +356,7 @@ class ClickHouseClientV2Test {
                                 maybeStable(DB_STATEMENT),
                                 "select * from " + tableName + " limit ?"),
                             equalTo(DB_QUERY_SUMMARY, emitStableDatabaseSemconv() ? "SELECT test_table" : null),
-                            equalTo(maybeStable(DB_OPERATION), "SELECT"))));
+                            equalTo(maybeStable(DB_OPERATION), emitStableDatabaseSemconv() ? null : "SELECT"))));
   }
 
   @Test
@@ -396,6 +394,6 @@ class ClickHouseClientV2Test {
                                 maybeStable(DB_STATEMENT),
                                 "select * from " + tableName + " where value={param_s: String}"),
                             equalTo(DB_QUERY_SUMMARY, emitStableDatabaseSemconv() ? "SELECT test_table" : null),
-                            equalTo(maybeStable(DB_OPERATION), "SELECT"))));
+                            equalTo(maybeStable(DB_OPERATION), emitStableDatabaseSemconv() ? null : "SELECT"))));
   }
 }
