@@ -73,6 +73,46 @@ testing {
         }
       }
     }
+
+    val hibernate6TestStableSemconv by registering(JvmTestSuite::class) {
+      dependencies {
+        implementation("com.h2database:h2:1.4.197")
+        implementation("org.hsqldb:hsqldb:2.0.0")
+        if (latestDepTest) {
+          implementation("org.hibernate:hibernate-core:6.+")
+        } else {
+          implementation("org.hibernate:hibernate-core:6.0.0.Final")
+        }
+      }
+
+      targets {
+        all {
+          testTask.configure {
+            jvmArgs("-Dotel.semconv-stability.opt-in=database")
+          }
+        }
+      }
+    }
+
+    val hibernate7TestStableSemconv by registering(JvmTestSuite::class) {
+      dependencies {
+        implementation("com.h2database:h2:1.4.197")
+        implementation("org.hsqldb:hsqldb:2.0.0")
+        if (latestDepTest) {
+          implementation("org.hibernate:hibernate-core:7.+")
+        } else {
+          implementation("org.hibernate:hibernate-core:7.0.0.Final")
+        }
+      }
+
+      targets {
+        all {
+          testTask.configure {
+            jvmArgs("-Dotel.semconv-stability.opt-in=database")
+          }
+        }
+      }
+    }
   }
 }
 
@@ -84,11 +124,17 @@ tasks {
   named("compileHibernate7TestJava", JavaCompile::class).configure {
     options.release.set(17)
   }
+  named("compileHibernate7TestStableSemconvJava", JavaCompile::class).configure {
+    options.release.set(17)
+  }
   val testJavaVersion =
     gradle.startParameter.projectProperties.get("testJavaVersion")?.let(JavaVersion::toVersion)
       ?: JavaVersion.current()
   if (!testJavaVersion.isCompatibleWith(JavaVersion.VERSION_17)) {
     named("hibernate7Test", Test::class).configure {
+      enabled = false
+    }
+    named("hibernate7TestStableSemconv", Test::class).configure {
       enabled = false
     }
   }
@@ -109,6 +155,12 @@ tasks {
   }
 
   check {
-    dependsOn(testing.suites, testStableSemconv, testExperimental)
+    dependsOn(
+      testing.suites,
+      testStableSemconv,
+      testExperimental,
+      testing.suites.named("hibernate6TestStableSemconv"),
+      testing.suites.named("hibernate7TestStableSemconv")
+    )
   }
 }

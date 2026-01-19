@@ -75,6 +75,45 @@ testing {
         }
       }
     }
+
+    val version5TestStableSemconv by registering(JvmTestSuite::class) {
+      dependencies {
+        sources {
+          java {
+            setSrcDirs(listOf("src/test/java"))
+          }
+          resources {
+            setSrcDirs(listOf("src/test/resources"))
+          }
+        }
+
+        implementation("com.h2database:h2:1.4.197")
+        implementation("javax.xml.bind:jaxb-api:2.2.11")
+        implementation("com.sun.xml.bind:jaxb-core:2.2.11")
+        implementation("com.sun.xml.bind:jaxb-impl:2.2.11")
+        implementation("javax.activation:activation:1.1.1")
+        implementation("org.hsqldb:hsqldb:2.0.0")
+        implementation(project(":instrumentation:hibernate:testing"))
+
+        if (latestDepTest) {
+          implementation("org.hibernate:hibernate-core:5.0.0.Final")
+          implementation("org.hibernate:hibernate-entitymanager:5.0.0.Final")
+          implementation("org.springframework.data:spring-data-jpa:2.3.0.RELEASE")
+        } else {
+          implementation("org.hibernate:hibernate-core:5.+")
+          implementation("org.hibernate:hibernate-entitymanager:5.+")
+          implementation("org.springframework.data:spring-data-jpa:(2.4.0,3)")
+        }
+      }
+
+      targets {
+        all {
+          testTask.configure {
+            jvmArgs("-Dotel.semconv-stability.opt-in=database")
+          }
+        }
+      }
+    }
   }
 }
 
@@ -106,6 +145,6 @@ tasks {
   }
 
   check {
-    dependsOn(testing.suites, testStableSemconv, testExperimental)
+    dependsOn(testing.suites, testStableSemconv, testExperimental, testing.suites.named("version5TestStableSemconv"))
   }
 }
