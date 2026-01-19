@@ -85,40 +85,16 @@ tasks {
   named("compileHibernateReactive4TestJava", JavaCompile::class).configure {
     options.release.set(17)
   }
-  val testJavaVersion =
-    gradle.startParameter.projectProperties.get("testJavaVersion")?.let(JavaVersion::toVersion)
-      ?: JavaVersion.current()
-  if (testJavaVersion.isJava8) {
-    named("hibernateReactive2Test", Test::class).configure {
-      enabled = false
-    }
-    named("hibernateReactive2TestStableSemconv", Test::class).configure {
-      enabled = false
-    }
-    if (latestDepTest) {
-      named("hibernateReactive1Test", Test::class).configure {
-        enabled = false
-      }
-      named("hibernateReactive1TestStableSemconv", Test::class).configure {
-        enabled = false
-      }
-    }
-  }
-  if (testJavaVersion.isJava8 || testJavaVersion.isJava11) {
-    named("hibernateReactive4Test", Test::class).configure {
-      enabled = false
-    }
-    named("hibernateReactive4TestStableSemconv", Test::class).configure {
-      enabled = false
-    }
-  }
-
   val testStableSemconv by registering(Test::class) {
     testClassesDirs = sourceSets.test.get().output.classesDirs
     classpath = sourceSets.test.get().runtimeClasspath
 
     jvmArgs("-Dotel.semconv-stability.opt-in=database")
   }
+
+  val testJavaVersion =
+    gradle.startParameter.projectProperties.get("testJavaVersion")?.let(JavaVersion::toVersion)
+      ?: JavaVersion.current()
 
   val stableSemconvSuites = testing.suites.withType(JvmTestSuite::class)
     .matching { it.name != "test" }
@@ -128,8 +104,36 @@ tasks {
         classpath = suite.sources.runtimeClasspath
 
         jvmArgs("-Dotel.semconv-stability.opt-in=database")
+
+        // Apply Java version constraints
+        if (suite.name == "hibernateReactive2Test" && testJavaVersion.isJava8) {
+          enabled = false
+        }
+        if (suite.name == "hibernateReactive1Test" && testJavaVersion.isJava8 && latestDepTest) {
+          enabled = false
+        }
+        if (suite.name == "hibernateReactive4Test" && (testJavaVersion.isJava8 || testJavaVersion.isJava11)) {
+          enabled = false
+        }
       }
     }
+
+  // Apply Java version constraints to base test suites
+  if (testJavaVersion.isJava8) {
+    named("hibernateReactive2Test", Test::class).configure {
+      enabled = false
+    }
+    if (latestDepTest) {
+      named("hibernateReactive1Test", Test::class).configure {
+        enabled = false
+      }
+    }
+  }
+  if (testJavaVersion.isJava8 || testJavaVersion.isJava11) {
+    named("hibernateReactive4Test", Test::class).configure {
+      enabled = false
+    }
+  }
 
   check {
     dependsOn(testing.suites, testStableSemconv, stableSemconvSuites)

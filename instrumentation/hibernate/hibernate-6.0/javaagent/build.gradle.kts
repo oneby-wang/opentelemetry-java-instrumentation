@@ -84,17 +84,6 @@ tasks {
   named("compileHibernate7TestJava", JavaCompile::class).configure {
     options.release.set(17)
   }
-  val testJavaVersion =
-    gradle.startParameter.projectProperties.get("testJavaVersion")?.let(JavaVersion::toVersion)
-      ?: JavaVersion.current()
-  if (!testJavaVersion.isCompatibleWith(JavaVersion.VERSION_17)) {
-    named("hibernate7Test", Test::class).configure {
-      enabled = false
-    }
-    named("hibernate7TestStableSemconv", Test::class).configure {
-      enabled = false
-    }
-  }
 
   val testExperimental by registering(Test::class) {
     testClassesDirs = sourceSets.test.get().output.classesDirs
@@ -111,6 +100,10 @@ tasks {
     jvmArgs("-Dotel.semconv-stability.opt-in=database")
   }
 
+  val testJavaVersion =
+    gradle.startParameter.projectProperties.get("testJavaVersion")?.let(JavaVersion::toVersion)
+      ?: JavaVersion.current()
+
   val stableSemconvSuites = testing.suites.withType(JvmTestSuite::class)
     .matching { it.name != "test" }
     .map { suite ->
@@ -119,8 +112,20 @@ tasks {
         classpath = suite.sources.runtimeClasspath
 
         jvmArgs("-Dotel.semconv-stability.opt-in=database")
+
+        // Apply Java version constraints
+        if (suite.name == "hibernate7Test" && !testJavaVersion.isCompatibleWith(JavaVersion.VERSION_17)) {
+          enabled = false
+        }
       }
     }
+
+  // Apply Java version constraints to base test suites
+  if (!testJavaVersion.isCompatibleWith(JavaVersion.VERSION_17)) {
+    named("hibernate7Test", Test::class).configure {
+      enabled = false
+    }
+  }
 
   check {
     dependsOn(testing.suites, testStableSemconv, testExperimental, stableSemconvSuites)
