@@ -7,6 +7,7 @@ package io.opentelemetry.javaagent.instrumentation.couchbase.v2_0;
 
 import io.opentelemetry.instrumentation.api.incubator.semconv.db.DbClientAttributesGetter;
 import io.opentelemetry.instrumentation.api.incubator.semconv.db.SqlStatementInfo;
+import io.opentelemetry.instrumentation.api.internal.SemconvStability;
 import io.opentelemetry.semconv.incubating.DbIncubatingAttributes;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -44,7 +45,17 @@ final class CouchbaseAttributesGetter
   @Override
   @Nullable
   public String getDbOperationName(CouchbaseRequestInfo couchbaseRequest) {
-    return couchbaseRequest.operation();
+    // For method calls, always return the operation name
+    if (couchbaseRequest.isMethodCall()) {
+      return couchbaseRequest.operationInternal();
+    }
+    // For queries, only extract operation name under old semconv
+    // Under stable semconv, we use db.query.summary instead
+    if (SemconvStability.emitOldDatabaseSemconv()) {
+      SqlStatementInfo sqlStatementInfo = couchbaseRequest.getSqlStatementInfo();
+      return sqlStatementInfo != null ? sqlStatementInfo.getOperationName() : null;
+    }
+    return null;
   }
 
   @Override
