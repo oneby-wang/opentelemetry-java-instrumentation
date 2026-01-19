@@ -91,6 +91,9 @@ tasks {
     named("hibernate7Test", Test::class).configure {
       enabled = false
     }
+    named("hibernate7TestStableSemconv", Test::class).configure {
+      enabled = false
+    }
   }
 
   val testExperimental by registering(Test::class) {
