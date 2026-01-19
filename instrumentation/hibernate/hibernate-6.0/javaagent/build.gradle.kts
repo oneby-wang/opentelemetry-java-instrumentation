@@ -73,64 +73,6 @@ testing {
         }
       }
     }
-
-    val hibernate6TestStableSemconv by registering(JvmTestSuite::class) {
-      sources {
-        java {
-          setSrcDirs(listOf("src/hibernate6Test/java"))
-        }
-        resources {
-          setSrcDirs(listOf("src/hibernate6Test/resources"))
-        }
-      }
-
-      dependencies {
-        implementation("com.h2database:h2:1.4.197")
-        implementation("org.hsqldb:hsqldb:2.0.0")
-        if (latestDepTest) {
-          implementation("org.hibernate:hibernate-core:6.+")
-        } else {
-          implementation("org.hibernate:hibernate-core:6.0.0.Final")
-        }
-      }
-
-      targets {
-        all {
-          testTask.configure {
-            jvmArgs("-Dotel.semconv-stability.opt-in=database")
-          }
-        }
-      }
-    }
-
-    val hibernate7TestStableSemconv by registering(JvmTestSuite::class) {
-      sources {
-        java {
-          setSrcDirs(listOf("src/hibernate7Test/java"))
-        }
-        resources {
-          setSrcDirs(listOf("src/hibernate7Test/resources"))
-        }
-      }
-
-      dependencies {
-        implementation("com.h2database:h2:1.4.197")
-        implementation("org.hsqldb:hsqldb:2.0.0")
-        if (latestDepTest) {
-          implementation("org.hibernate:hibernate-core:7.+")
-        } else {
-          implementation("org.hibernate:hibernate-core:7.0.0.Final")
-        }
-      }
-
-      targets {
-        all {
-          testTask.configure {
-            jvmArgs("-Dotel.semconv-stability.opt-in=database")
-          }
-        }
-      }
-    }
   }
 }
 
@@ -142,17 +84,11 @@ tasks {
   named("compileHibernate7TestJava", JavaCompile::class).configure {
     options.release.set(17)
   }
-  named("compileHibernate7TestStableSemconvJava", JavaCompile::class).configure {
-    options.release.set(17)
-  }
   val testJavaVersion =
     gradle.startParameter.projectProperties.get("testJavaVersion")?.let(JavaVersion::toVersion)
       ?: JavaVersion.current()
   if (!testJavaVersion.isCompatibleWith(JavaVersion.VERSION_17)) {
     named("hibernate7Test", Test::class).configure {
-      enabled = false
-    }
-    named("hibernate7TestStableSemconv", Test::class).configure {
       enabled = false
     }
   }
@@ -172,7 +108,18 @@ tasks {
     jvmArgs("-Dotel.semconv-stability.opt-in=database")
   }
 
+  val stableSemconvSuites = testing.suites.withType(JvmTestSuite::class)
+    .matching { it.name != "test" }
+    .map { suite ->
+      register<Test>("${suite.name}StableSemconv") {
+        testClassesDirs = suite.sources.output.classesDirs
+        classpath = suite.sources.runtimeClasspath
+
+        jvmArgs("-Dotel.semconv-stability.opt-in=database")
+      }
+    }
+
   check {
-    dependsOn(testing.suites, testStableSemconv, testExperimental)
+    dependsOn(testing.suites, testStableSemconv, testExperimental, stableSemconvSuites)
   }
 }
