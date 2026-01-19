@@ -49,6 +49,7 @@ testing {
       dependencies {
         implementation("com.h2database:h2:1.4.197")
         implementation("org.hsqldb:hsqldb:2.0.0")
+        implementation(project(":instrumentation:hibernate:testing"))
         if (latestDepTest) {
           implementation("org.hibernate:hibernate-core:6.+")
         } else {
@@ -66,6 +67,7 @@ testing {
       dependencies {
         implementation("com.h2database:h2:1.4.197")
         implementation("org.hsqldb:hsqldb:2.0.0")
+        implementation(project(":instrumentation:hibernate:testing"))
         if (latestDepTest) {
           implementation("org.hibernate:hibernate-core:7.+")
         } else {
