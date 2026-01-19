@@ -11,6 +11,7 @@ import static io.opentelemetry.instrumentation.testing.junit.db.SemconvStability
 import static io.opentelemetry.sdk.testing.assertj.OpenTelemetryAssertions.equalTo;
 import static io.opentelemetry.semconv.DbAttributes.DB_NAMESPACE;
 import static io.opentelemetry.semconv.DbAttributes.DB_OPERATION_NAME;
+import static io.opentelemetry.semconv.DbAttributes.DB_QUERY_SUMMARY;
 import static io.opentelemetry.semconv.ServerAttributes.SERVER_ADDRESS;
 import static io.opentelemetry.semconv.ServerAttributes.SERVER_PORT;
 import static io.opentelemetry.semconv.incubating.DbIncubatingAttributes.DB_CONNECTION_STRING;
@@ -185,8 +186,15 @@ public abstract class AbstractR2dbcStatementTest {
                                 equalTo(maybeStable(DB_NAME), DB),
                                 equalTo(DB_USER, emitStableDatabaseSemconv() ? null : USER_DB),
                                 equalTo(maybeStable(DB_STATEMENT), parameter.expectedStatement),
-                                equalTo(maybeStable(DB_OPERATION), parameter.operation),
-                                equalTo(maybeStable(DB_SQL_TABLE), parameter.table),
+                                equalTo(
+                                    DB_QUERY_SUMMARY,
+                                    emitStableDatabaseSemconv() ? parameter.getQuerySummary() : null),
+                                equalTo(
+                                    maybeStable(DB_OPERATION),
+                                    emitStableDatabaseSemconv() ? null : parameter.operation),
+                                equalTo(
+                                    maybeStable(DB_SQL_TABLE),
+                                    emitStableDatabaseSemconv() ? null : parameter.table),
                                 equalTo(PEER_SERVICE, "test-peer-service"),
                                 equalTo(SERVER_ADDRESS, container.getHost()),
                                 equalTo(SERVER_PORT, port)),
@@ -306,6 +314,14 @@ public abstract class AbstractR2dbcStatementTest {
       this.spanName = spanName;
       this.table = table;
       this.operation = operation;
+    }
+
+    String getQuerySummary() {
+      if (!emitStableDatabaseSemconv()) {
+        return null;
+      }
+      // spanName contains the expected query summary for stable semconv
+      return spanName;
     }
   }
 
