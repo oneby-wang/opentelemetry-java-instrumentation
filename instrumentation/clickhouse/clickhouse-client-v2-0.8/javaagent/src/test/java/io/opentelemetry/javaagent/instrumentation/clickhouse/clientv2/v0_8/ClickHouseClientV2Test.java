@@ -135,6 +135,7 @@ class ClickHouseClientV2Test {
         "io.opentelemetry.clickhouse-client-v2-0.8",
         DB_SYSTEM_NAME,
         DB_OPERATION_NAME,
+        DB_QUERY_SUMMARY,
         DB_NAMESPACE,
         SERVER_ADDRESS,
         SERVER_PORT);
