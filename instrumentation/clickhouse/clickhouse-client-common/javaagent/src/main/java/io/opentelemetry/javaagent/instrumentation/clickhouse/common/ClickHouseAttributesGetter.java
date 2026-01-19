@@ -37,6 +37,15 @@ final class ClickHouseAttributesGetter
     return request.getSqlStatementInfo().getOperationName();
   }
 
+  @Nullable
+  @Override
+  public String getDbQuerySummary(ClickHouseDbRequest request) {
+    if (request.getSqlStatementInfo() == null) {
+      return null;
+    }
+    return request.getSqlStatementInfo().getQuerySummary();
+  }
+
   @SuppressWarnings("deprecation") // using deprecated DbSystemIncubatingValues
   @Override
   public String getDbSystemName(ClickHouseDbRequest request) {
