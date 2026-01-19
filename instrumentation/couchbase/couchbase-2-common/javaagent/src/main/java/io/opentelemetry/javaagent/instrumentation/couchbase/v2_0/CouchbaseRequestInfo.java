@@ -71,9 +71,19 @@ public abstract class CouchbaseRequestInfo {
   public abstract SqlStatementInfo getSqlStatementInfo();
 
   @Nullable
-  public abstract String operation();
+  abstract String operationInternal();
 
   public abstract boolean isMethodCall();
+
+  @Nullable
+  public String operation() {
+    String operation = operationInternal();
+    if (operation != null) {
+      return operation;
+    }
+    SqlStatementInfo sqlStatementInfo = getSqlStatementInfo();
+    return sqlStatementInfo != null ? sqlStatementInfo.getOperationName() : null;
+  }
 
   @Nullable
   public String getLocalAddress() {

@@ -199,9 +199,7 @@ public abstract class AbstractCouchbaseClientTest extends AbstractCouchbaseTest 
                         .hasAttributesSatisfyingExactly(
                             equalTo(maybeStable(DB_SYSTEM), COUCHBASE),
                             equalTo(maybeStable(DB_NAME), bucketCouchbase.name()),
-                            equalTo(
-                                maybeStable(DB_OPERATION),
-                                SemconvStability.emitStableDatabaseSemconv() ? null : "SELECT"),
+                            equalTo(maybeStable(DB_OPERATION), "SELECT"),
                             satisfies(
                                 maybeStable(DB_STATEMENT), s -> s.startsWith("SELECT mockrow")),
                             equalTo(
