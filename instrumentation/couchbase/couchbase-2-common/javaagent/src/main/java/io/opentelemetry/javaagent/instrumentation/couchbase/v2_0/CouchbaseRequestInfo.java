@@ -71,7 +71,7 @@ public abstract class CouchbaseRequestInfo {
   public abstract SqlStatementInfo getSqlStatementInfo();
 
   @Nullable
-  public abstract String operationInternal();
+  abstract String operationInternal();
 
   public abstract boolean isMethodCall();
 

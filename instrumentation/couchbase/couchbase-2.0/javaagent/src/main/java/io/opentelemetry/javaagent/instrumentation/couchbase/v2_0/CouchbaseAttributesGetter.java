@@ -47,13 +47,12 @@ final class CouchbaseAttributesGetter
   public String getDbOperationName(CouchbaseRequestInfo couchbaseRequest) {
     // For method calls, always return the operation name
     if (couchbaseRequest.isMethodCall()) {
-      return couchbaseRequest.operationInternal();
+      return couchbaseRequest.operation();
     }
     // For queries, only extract operation name under old semconv
     // Under stable semconv, we use db.query.summary instead
     if (SemconvStability.emitOldDatabaseSemconv()) {
-      SqlStatementInfo sqlStatementInfo = couchbaseRequest.getSqlStatementInfo();
-      return sqlStatementInfo != null ? sqlStatementInfo.getOperationName() : null;
+      return couchbaseRequest.operation();
     }
     return null;
   }
