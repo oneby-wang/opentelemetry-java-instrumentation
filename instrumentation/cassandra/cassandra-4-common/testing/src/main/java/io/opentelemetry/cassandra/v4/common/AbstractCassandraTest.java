@@ -99,7 +99,7 @@ public abstract class AbstractCassandraTest {
         testing(),
         getInstrumentationName(),
         DB_SYSTEM_NAME,
-        DB_OPERATION_NAME,
+        emitStableDatabaseSemconv() ? DB_QUERY_SUMMARY : DB_OPERATION_NAME,
         NETWORK_PEER_ADDRESS,
         NETWORK_PEER_PORT,
         SERVER_ADDRESS,
