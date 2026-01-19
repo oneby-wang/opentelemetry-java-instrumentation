@@ -75,6 +75,15 @@ testing {
     }
 
     val hibernate6TestStableSemconv by registering(JvmTestSuite::class) {
+      sources {
+        java {
+          setSrcDirs(listOf("src/hibernate6Test/java"))
+        }
+        resources {
+          setSrcDirs(listOf("src/hibernate6Test/resources"))
+        }
+      }
+
       dependencies {
         implementation("com.h2database:h2:1.4.197")
         implementation("org.hsqldb:hsqldb:2.0.0")
@@ -95,6 +104,15 @@ testing {
     }
 
     val hibernate7TestStableSemconv by registering(JvmTestSuite::class) {
+      sources {
+        java {
+          setSrcDirs(listOf("src/hibernate7Test/java"))
+        }
+        resources {
+          setSrcDirs(listOf("src/hibernate7Test/resources"))
+        }
+      }
+
       dependencies {
         implementation("com.h2database:h2:1.4.197")
         implementation("org.hsqldb:hsqldb:2.0.0")

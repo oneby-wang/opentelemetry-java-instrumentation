@@ -74,6 +74,15 @@ testing {
     }
 
     val hibernateReactive1TestStableSemconv by registering(JvmTestSuite::class) {
+      sources {
+        java {
+          setSrcDirs(listOf("src/hibernateReactive1Test/java"))
+        }
+        resources {
+          setSrcDirs(listOf("src/hibernateReactive1Test/resources"))
+        }
+      }
+
       dependencies {
         implementation("org.testcontainers:testcontainers")
         if (latestDepTest) {
@@ -96,6 +105,15 @@ testing {
     }
 
     val hibernateReactive2TestStableSemconv by registering(JvmTestSuite::class) {
+      sources {
+        java {
+          setSrcDirs(listOf("src/hibernateReactive2Test/java"))
+        }
+        resources {
+          setSrcDirs(listOf("src/hibernateReactive2Test/resources"))
+        }
+      }
+
       dependencies {
         implementation("org.testcontainers:testcontainers")
         implementation(project(":instrumentation:hibernate:hibernate-reactive-1.0:hibernate-reactive-2.0-testing"))
@@ -119,6 +137,15 @@ testing {
     }
 
     val hibernateReactive4TestStableSemconv by registering(JvmTestSuite::class) {
+      sources {
+        java {
+          setSrcDirs(listOf("src/hibernateReactive4Test/java"))
+        }
+        resources {
+          setSrcDirs(listOf("src/hibernateReactive4Test/resources"))
+        }
+      }
+
       dependencies {
         implementation("org.testcontainers:testcontainers")
         implementation(project(":instrumentation:hibernate:hibernate-reactive-1.0:hibernate-reactive-2.0-testing"))
